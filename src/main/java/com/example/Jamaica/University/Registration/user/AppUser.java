@@ -4,11 +4,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -17,7 +19,8 @@ import java.util.Collections;
 @EqualsAndHashCode
 @NoArgsConstructor
 @Entity
-public class User implements UserDetails {
+@Slf4j
+public class AppUser implements UserDetails {
 
     @Id
     @SequenceGenerator(
@@ -30,8 +33,8 @@ public class User implements UserDetails {
             generator = "student_sequence"
     )
     private  Long id;
-    private String name;
-    private String username;
+    private String firstName;
+    private String lastName;
     private String email;
     private String password;
     @Enumerated(EnumType.STRING)
@@ -42,19 +45,21 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        log.trace("Enter Method Granted Authority");
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole.name());
+        log.trace("Exit Method Granted Authority");
 
         return Collections.singletonList(authority);
+
     }
 
-    public User(String name, String username, String email, String password, UserRole userRole, Boolean locked, Boolean enabled) {
-        this.name = name;
-        this.username = username;
+    public AppUser(String name, String username, String email, String password, UserRole userRole) {
+        this.firstName = name;
+        this.lastName = username;
         this.email = email;
         this.password = password;
         this.userRole = userRole;
-        this.locked = locked;
-        this.enabled = enabled;
+
     }
 
     @Override
@@ -63,8 +68,16 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return username;
+    public String getUsername(){
+        return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 
     @Override
